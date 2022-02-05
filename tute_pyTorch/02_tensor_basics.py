@@ -46,12 +46,11 @@ import torch
 #print(x)
 
 
-
-
-
-# # torch.rand(size): random numbers [0, 1]
+# torch.rand(size): random numbers [0, 1]
 # x = torch.rand(5, 3)
 # print(x)
+
+
 
 # # torch.zeros(size), fill with 0
 # # torch.ones(size), fill with 1
@@ -81,12 +80,35 @@ import torch
 # # i.e. this is a variable in your model that you want to optimize
 # x = torch.tensor([5.5, 3], requires_grad=True)
 
-# # Operations
+
+## 12:30_TimeLine
+
+# Operations
 # y = torch.rand(2, 2)
 # x = torch.rand(2, 2)
+# print(id(y))
+# print(id(x))
 
-# # elementwise addition
+"""
+139653067627728
+139653067627888
+"""
+
+
+# elementwise addition
 # z = x + y
+# print(id(y))
+# print(id(x))
+# print(id(z))
+
+"""
+140153464806768 -- print(id(y))
+140153464806128 -- print(id(x))
+140153464806768 -- print(id(y))
+140153464806128 -- print(id(x))
+140153464804848 -- print(id(z))
+"""
+
 # # torch.add(x,y)
 
 # # in place addition, everythin with a trailing underscore is an inplace operation
@@ -105,10 +127,21 @@ import torch
 # z = x / y
 # z = torch.div(x,y)
 
-# # Slicing
-# x = torch.rand(5,3)
+
+## 15:26__TimeLine
+# # Slicing---similar to NUMP Arrays --(5,3) 5-ROWS and 3-COLUMNS
+x = torch.rand(5,3)
 # print(x)
 # print(x[:, 0]) # all rows, column 0
+"""
+tensor([[0.8246, 0.7389, 0.1673],
+        [0.7929, 0.2824, 0.3094],
+        [0.8261, 0.3785, 0.6233],
+        [0.8745, 0.8505, 0.9347],
+        [0.3323, 0.8340, 0.5433]])
+tensor([0.8246, 0.7929, 0.8261, 0.8745, 0.3323])
+"""
+
 # print(x[1, :]) # row 1, all columns
 # print(x[1,1]) # element at 1, 1
 
