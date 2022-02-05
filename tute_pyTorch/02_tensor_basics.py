@@ -1,4 +1,11 @@
+
+### FOOBAR_Check_if_Same_Memory_
+
 import torch
+## CUDA Driver is available 
+print(torch.cuda.is_available()) ## True 
+
+
 
 # Everything in pytorch is based on Tensor operations.
 # A tensor can have different dimensions
@@ -142,11 +149,22 @@ tensor([[0.8246, 0.7389, 0.1673],
 tensor([0.8246, 0.7929, 0.8261, 0.8745, 0.3323])
 """
 
+### FOOBAR_Check_if_Same_Memory_
+#https://discuss.pytorch.org/t/any-way-to-check-if-two-tensors-have-the-same-base/44310/9
+
 # print(x[1, :]) # row 1, all columns
 # print(x[1,1]) # element at 1, 1
 
+
 # # Get the actual value if only 1 element in your tensor
-# print(x[1,1].item())
+print(x[1,1].item()) ## FOOBAR_this Value will change as its a RANDOM Number -- rand()
+#0.27338242530822754
+#0.49868154525756836
+
+
+
+
+
 
 # # Reshape with torch.view()
 # x = torch.randn(4, 4)
