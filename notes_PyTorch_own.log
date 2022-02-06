@@ -1,0 +1,8 @@
+
+
+-- The second core thing that PyTorch provides is the
+ability of tensors to keep track of the operations performed on them and to analyti-
+cally compute derivatives of an output of a computation with respect to any of its
+inputs. This is used for numerical optimization, and it is provided natively by tensors
+by virtue of dispatching through PyTorch’s autograd engine under the hood.
+
