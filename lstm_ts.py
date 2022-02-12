@@ -57,9 +57,29 @@ class lstm_Model(nn.Module):
     def forward(self,x,future=0):
         """
         Args:
-            x ([type]): 
+            x ([type]): This is the TENSOR with the Actual Data 
             future (int, optional): Dhankar-->> How many OutOfSample to Forecast?. Defaults to 0.
         """
+        print("----forward---type(x)--------",type(x))
+
+        outputs = []
+        n_samples = x.shape[0]
+
+        h_t = torch.zeros(n_samples, self.n_hidden, dtype=torch.float32) # Initial >> Hidden-State 
+        ##https://pytorch.org/docs/stable/generated/torch.zeros.html
+        c_t = torch.zeros(n_samples, self.n_hidden, dtype=torch.float32) # Initial >> Cell-State 
+
+        h_t2 = torch.zeros(n_samples, self.n_hidden, dtype=torch.float32) # Initial >> Hidden-State - for the 2nd LSTM Cell 
+        c_t2 = torch.zeros(n_samples, self.n_hidden, dtype=torch.float32) # Initial >> Cell-State - for the 2nd LSTM Cell 
+
+        ## We will go over the TENSOR - 1 element at a time - thats why above in the Class 
+        # we have CELL_1 - with INPUT ==1
+
+        # Will Split the Tensor into Chunks 
+        # Each Chunk is a View of the Tensor 
+
+
+
         
 
 
