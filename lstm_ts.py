@@ -105,24 +105,73 @@ if __name__ == "__main__":
     test_output = torch.from_numpy(y[:3, 1:])  # this shape (3 , 999) - above also same shape (3 , 999)   
     ## 3 SAMPLES and 999 VALUES 
 
+    n_hidden = 51
     model = lstm_Model(n_hidden=n_hidden)
     criterion = nn.MSELoss()
     optimizer = optim.LBFGS(model.parameters(), lr=0.8) # pass in Learning Rate as a Variable  - lr
     ## LBFGS -- is diff from the ADAM Optimizer ?? How ?? What ??
     ## https://en.wikipedia.org/wiki/Limited-memory_BFGS
 
-    n_steps = 10 # n_steps == how many rounds of TRAINING 
+    n_steps = 30 # n_steps == how many rounds of TRAINING 
 
     for iter_k in range(n_steps):
-        print("Step", iter_k)
+        print("Step___in n_steps__>>", iter_k)
 
         def closure():
-            optimizer.zero_grad() ## Empty the GRADIENTS 
+            optimizer.zero_grad() ## Empty the GRADIENTS -- ZERO the GRADIENTS --- when you start your training loop, 
+            #ideally you should zero out the gradients so that you do the parameter update correctly -- SO -- https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             output = model(train_input)
             loss = criterion(output, train_output)
+            ##criterion = nn.MSELoss() -- this is done above 
             print("Loss", loss.item())
-            loss.backward()
+            loss.backward() # this -- backward -- applies the Back Propagation 
+            # default action has been set to accumulate (i.e. sum) the gradients on every loss.backward() call. 
+            # TODO -->> SO -- https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             return loss
+        
+        optimizer.step(closure) # passing - closure - without any Params to >> optimizer
+        ## Training done -- now Predict -- on the TEST Data >> test_input
+        print("-----Training done ------ now Predict on >> test_input")
+
+        
+        ## Predict on >> test_input
+        with torch.no_grad(): # Without Gradients 
+            future = 1000
+            pred = model(test_input, future=future) # this here - PRED will also include the -- future Values 
+            loss = criterion(pred[:, :-future], test_output) # from this here -- PRED -- we Delete the FUTURE Vals
+            #criterion = nn.MSELoss() -- this is done above 
+            print("Test Loss", loss.item())
+            y = pred.detach().numpy() ## .detach() -->> Returns a new Tensor, detached from the current graph.
+            # detach the tensor and convert to Numpy Array -->> https://pytorch.org/docs/stable/generated/torch.Tensor.detach.html
+            print("--SHAPE >> pred.detach().numpy()---",y.shape)
+
+        
+        # Plot -- ACTUAL vs. PREDICT 
+        plt.figure(figsize=(12, 6))
+        plt.title(f"Step {iter_k+1}")
+
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        n = train_input.shape[1]
+
+        def draw(y_i, color):
+            plt.plot(np.arange(n), y_i[:n], color, linewidth=2.0) ## ACTUAL 
+            plt.plot(np.arange(n, n+future), y_i[n:], color + ":", linewidth=2.0) ## PREDICT
+
+        draw(y[0], 'r')
+        draw(y[1], 'g')
+        draw(y[2], 'b')
+
+        plt.savefig("pred_step_%d_.pdf" % iter_k)
+        plt.close()
+
+
+
+
+
+
 
 
 
