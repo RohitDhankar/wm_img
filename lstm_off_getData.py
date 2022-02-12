@@ -4,10 +4,13 @@ import torch
 np.random.seed(2)
 
 T = 20
-L = 100 # 1000
-N = 2 # 100
+L = 1000 # 1000
+N = 20 # 100
 
-#T_20_L_100_N_2
+#T_20_L_100_N_2_
+#T_20_L_1000_N_20_
+
+
 x = np.empty((N, L), 'int64') #
 # Empty NumpyArray of shape --> N,L == Number of Arrays , Count of Elements in Each Array 
 
@@ -31,5 +34,5 @@ print("---data[:5]----\n",data[:5])
 print("---data[:-10]----\n",data[:-10])
 print("------type(data)----",type(data)) ##- <class 'numpy.ndarray'>
 
-torch.save(data, open('own_data_T_20_L_100_N_2.pt', 'wb'))
+torch.save(data, open('own_data_T_20_L_1000_N_20_.pt', 'wb'))
 ## traindata.pt -- 1.3MB -- ZIP File 

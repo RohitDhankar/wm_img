@@ -45,9 +45,9 @@ if __name__ == '__main__':
     torch.manual_seed(0)
     # load data and make training set
     #data = torch.load('traindata.pt')
-    data = torch.load('own_data_T_20_L_100_N_2.pt')
+    data = torch.load('own_data_T_20_L_1000_N_20_.pt')
 
-    print("----initial_data___\n",data)
+    print("----initial_data___\n",type(data))
 
 
     input = torch.from_numpy(data[3:, :-1])
@@ -81,8 +81,8 @@ if __name__ == '__main__':
         optimizer.step(closure)
         # begin to predict, no need to track gradient here
         with torch.no_grad():
-            #future = 1000 ## Original 
-            future = 10 ## FOOBAR CHANGED 
+            future = 1000 ## Original 
+            #future = 10 ## FOOBAR CHANGED 
             pred = seq(test_input, future=future)
             loss = criterion(pred[:, :-future], test_target)
             print('test loss:', loss.item())
