@@ -84,7 +84,7 @@ class lstm_Model(nn.Module):
             output_linear_1 = self.linear(h_t2) ## output of the Linear Layer # Input is -- Hidden State OutPut from earlier Cell -->> h_t2
             outputs.append(output_linear_1)
 
-        for i in range(future):
+        for iter_k in range(future):
             h_t, c_t = self.lstm1(output_linear_1, (h_t, c_t)) # output_linear_1 -- from Linear Layer above is INPUT of 1st LSTMCell 
             h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
             output = self.linear(h_t2)
@@ -95,6 +95,38 @@ class lstm_Model(nn.Module):
 
         outputs = torch.cat(outputs, dim=1) # Concatenates the given sequence of tensors in the given dimension. All tensors must either have the same shape (except in the concatenating dimension) or be empty.
         return outputs
+
+if __name__ == "__main__":
+    # when - shape y = 100 , 1000
+    train_input = torch.from_numpy(y[3:, :-1]) # this shape (97 , 999) - below also same shape (97 , 999)
+    train_output = torch.from_numpy(y[3:, 1:]) # this is SHIFTED Data >> train_input is SHIFTED 
+
+    test_input = torch.from_numpy(y[:3, :-1]) # Elements at index -- 0,1,2
+    test_output = torch.from_numpy(y[:3, 1:])  # this shape (3 , 999) - above also same shape (3 , 999)   
+    ## 3 SAMPLES and 999 VALUES 
+
+    model = lstm_Model(n_hidden=n_hidden)
+    criterion = nn.MSELoss()
+    optimizer = optim.LBFGS(model.parameters(), lr=0.8) # pass in Learning Rate as a Variable  - lr
+    ## LBFGS -- is diff from the ADAM Optimizer ?? How ?? What ??
+    ## https://en.wikipedia.org/wiki/Limited-memory_BFGS
+
+    n_steps = 10 # n_steps == how many rounds of TRAINING 
+
+    for iter_k in range(n_steps):
+        print("Step", iter_k)
+
+        def closure():
+            optimizer.zero_grad() ## Empty the GRADIENTS 
+            output = model(train_input)
+            loss = criterion(output, train_output)
+            print("Loss", loss.item())
+            loss.backward()
+            return loss
+
+
+
+
 
 
 
