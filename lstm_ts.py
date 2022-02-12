@@ -75,8 +75,28 @@ class lstm_Model(nn.Module):
         ## We will go over the TENSOR - 1 element at a time - thats why above in the Class 
         # we have CELL_1 - with INPUT ==1
 
-        # Will Split the Tensor into Chunks 
+        # Will Split the Tensor -- x -- into Chunks 
         # Each Chunk is a View of the Tensor 
+
+        for input_t in torch.split(x, 1, dim=1):
+            h_t, c_t = self.lstm1(input_t, (h_t, c_t))
+            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2)) ## Input here is -- Hidden State OutPut from earlier Cell -->> h_t
+            output_linear_1 = self.linear(h_t2) ## output of the Linear Layer # Input is -- Hidden State OutPut from earlier Cell -->> h_t2
+            outputs.append(output_linear_1)
+
+        for i in range(future):
+            h_t, c_t = self.lstm1(output_linear_1, (h_t, c_t)) # output_linear_1 -- from Linear Layer above is INPUT of 1st LSTMCell 
+            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
+            output = self.linear(h_t2)
+            outputs.append(output)
+
+        print("--forward--type(outputs[1])----",type(outputs[0]))
+        print("--forward--outputs[1])----\n",outputs[0])
+
+        outputs = torch.cat(outputs, dim=1) # Concatenates the given sequence of tensors in the given dimension. All tensors must either have the same shape (except in the concatenating dimension) or be empty.
+        return outputs
+
+
 
 
 
