@@ -1,0 +1,57 @@
+
+https://onnxruntime.ai/docs/api/python/tutorial.html
+https://onnxruntime.ai/docs/api/python/tutorial.html
+
+
+https://onnxruntime.ai/docs/
+https://github.com/microsoft/onnxruntime
+https://onnxruntime.ai/
+
+ONNX Runtime for Inferencing -- https://onnxruntime.ai/docs/
+
+ONNX Runtime Inference powers machine learning models in key Microsoft products and services across Office, Azure, Bing, as well as dozens of community projects.
+
+Examples use cases for ONNX Runtime Inferencing include:
+
+    Improve inference performance for a wide variety of ML models
+    Run on different hardware and operating systems
+    Train in Python but deploy into a C#/C++/Java app
+    Train and perform inference with models created in different frameworks
+
+How it works
+
+The premise is simple.
+
+    Get a model. This can be trained from any framework that supports export/conversion to ONNX format. See the tutorials for some of the popular frameworks/libraries.
+    Load and run the model with ONNX Runtime. See the basic tutorials for running models in different languages.
+    (Optional) Tune performance using various runtime configurations or hardware accelerators. There are lots of options here - see How to: Tune Performance as a starting point.
+
+Even without step 3, ONNX Runtime will often provide performance improvements compared to the original framework.
+
+
+
+SOURCE -- 
+https://towardsdatascience.com/hugging-face-transformer-inference-under-1-millisecond-latency-e1be0057a51c
+
+“ONNX is an open format built to represent machine learning models. 
+ONNX defines a common set of operators — the building blocks of machine learning 
+and deep learning models — and a common file format to enable AI developers 
+to use models with a variety of frameworks, tools, runtimes, and compilers.”
+ (https://onnx.ai/). 
+ The format has initially been created by Facebook and Microsoft to have a 
+ bridge between Pytorch (research) and Caffee2 (production).
+
+
+find and remove operations that are redundant: for instance dropout has no use 
+outside the training loop, it can be removed without any impact on inference;
+
+perform constant folding: meaning find some parts of the graph made of constant 
+expressions, and compute the results at compile time instead of runtime 
+(similar to most programming language compiler);
+
+“kernel fusion” --> merge some operations together: to avoid 1/ loading time, and 2/ share memory to
+avoid back and forth transfers with the global memory.
+Obviously, it will mainly benefit to memory bound operations 
+(like multiply and add operations, a very common pattern in deep learning), 
+it’s called “kernel fusion”;
+
