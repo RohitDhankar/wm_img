@@ -1,0 +1,760 @@
+
+
+Image--SKIMAGE---GitsDoneDown	https://github.com/BexTuychiev/medium_stories	
+Image--SKIMAGE---GitsDoneDown	https://gist.github.com/BexTuychiev	ALL GISTS
+Image--SKIMAGE---GitsDoneDown	https://towardsdatascience.com/massive-tutorial-on-image-processing-and-preparation-for-deep-learning-in-python-2-14816263b4a5	Logged in WM_IMG
+Image--SKIMAGE---GitsDoneDown	https://towardsdatascience.com/massive-tutorial-on-image-processing-and-preparation-for-deep-learning-in-python-1-e534ee42f122	Logged in WM_IMG
+
+Towards Data Science
+
+Bex T.
+
+Feb 17
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #1
+Manipulate and transform images at will
+Photo by Prasad Panchakshari on Unsplash
+Introduction
+
+We are here on a sad business. Very sad, indeed. We are here to learn how to take beautiful, breathtaking images and turn them into a bunch of ugly little numbers so that they are more presentable to all those soulless, mindless machines.
+
+We will take animals and strip them of their color, making them black and white. Grab flowers with vivid colors and rob them of their beauty. We will look at disturbing images of XRays and see ways to make them even more disturbing. Sometimes, we might even have fun drawing coins using a computer algorithm.
+
+In other words, we will learn how to perform image processing. And our library of honor will be Scikit-Image (Skimage) throughout the article.
+
+    This is a two-part post. You can read the second part here after this one. There is a link at the end as well.
+
+Basics
+1. What is an image?
+
+Image data is probably the most common after text. 
+So, how does a computer understand that selfie of you in front of the Eiffel Tower?
+
+It uses a grid of small square units called pixels. 
+A pixel covers a small area and has a value that represents a color. 
+The more pixels in an image, the higher its quality and more memory it takes to store.
+
+That's it. Image processing is mostly about manipulating these individual pixels 
+(or sometimes groups of them) so that computer vision algorithms can extract more 
+information from them.
+
+2. Image basics with NumPy and Skimage
+
+Images are loaded as NumPy ndarrays in both Matplotlib and Skimage.
+
+NumPy arrays always bring flexibility, speed, and power into the game. 
+Image processing is no different.
+
+Ndarrays make it easy to retrieve general details about the image, like its dimensions:
+
+Our hidden image is 853 pixels in height and 1280 in width. 
+The third dimension denotes the value of the RGB (red, green, blue) color channel. 
+The most common images formats are in 3D.
+
+You can retrieve individual pixel values via regular NumPy indexing. 
+Below, we try to index the image to retrieve each of the three color channels:
+png
+png
+Photo by Pixabay from Pexels
+png
+Photo by Pixabay from Pexels
+
+0 for red, 1 for green, and 2 for the blue channel — easy enough.
+
+I've created two functions, show and compare which show an image or display two 
+of them side by side for comparison. 
+We will be using both functions extensively throughout the tutorial, 
+so you might want to check out the code I hyperlinked.
+
+By convention, the third dimension of the ndarray is for the color channel, but this convention isn't always followed. Skimage usually provides parameters to specify this behavior whenever you find it so.
+
+Images are unlike the usual Matplotlib plots. Their origin isn't located in the bottom left, but at the position (0, 0), the top left.
+
+>>> show(image, axis=True)
+
+png
+Photo by Pixabay from Pexels
+
+When we plot images in Matplotlib, axes denote the ordering of the pixels, but we will usually be hiding them since they don't deliver much value to the viewer.
+3. Common transformations
+
+The most common image transformation we will be performing is converting color images to grayscale. Many image processing algorithms require grayscale, 2D arrays because the color isn't the defining feature of pictures, and computers can already extract enough information without it.
+png
+Photo by Jovana Nesic from Pexels
+
+>>> gray.shape(853, 1280)
+
+When converting images to grayscale, they lose their 3rd dimension — the color channel. Instead, each cell in the image array now represents an integer in uint8 type. They range from 0 to 255, giving 256 shades of gray.
+
+You can also use NumPy functions like np.flipud or np.fliplr at your heart's desire to manipulate images in any way you can manipulate a NumPy array.
+png
+Photo by Hanna from Pexels
+png
+Photo by Paul Basel from Pexels
+
+In the color module, you can find many other transformation functions to work with colors in images.
+4. Histogram of color channels
+
+Sometimes, it is helpful to look at the intensity of each color channel to get a feel of the color distributions. We can do so by slicing each color channel and plotting their histograms. Here is a function to perform this operation:
+
+Apart from the few Matplotlib details, you should pay attention to the call of the hist function. Once we extract the color channel and its array, we flatten it into a 1D array and pass it to the hist function. The bins should be 256, one for every pixel value - 0 being pitch black and 255 being entirely white.
+
+Let's use the function for our colorful scenery image:
+png
+Photo by Pixabay from Pexels
+
+>>> plot_with_hist_channel(colorful_scenery, "green")
+
+png
+Photo by Pixabay from Pexels
+
+>>> plot_with_hist_channel(colorful_scenery, "blue")
+
+png
+Photo by Pixabay from Pexels
+
+You can also use histograms to find out the lightness in the image after converting it to grayscale:
+png
+
+Most pixels have lower values as the scenery image is a bit darker.
+
+We will explore more applications of histograms in the following sections.
+Filters
+1. Manual thresholding
+
+Now, we arrive at the fun stuff — filtering images. The first operation we will learn is thresholding. Let's load an example image:
+
+stag = imread("images/binary_example.jpg")
+
+>>> show(stag)
+
+png
+Photo by cmonphotography from Pexels
+
+Thresholding has many applications in image segmentation, object detection, finding edges or contours, etc. It is mainly used to differentiate the background and foreground of an image.
+
+Thresholding works best on high contrast grayscale images, so we will convert the stag image:
+
+# Convert to graysacle
+stag_gray = rgb2gray(stag)
+
+>>> show(stag_gray)
+
+png
+Photo by cmonphotography from Pexels
+
+We will start with basic manual thresholding and move on to automatic.
+
+First, we look at the mean value of all pixels in the gray image:
+
+>>> stag_gray.mean()0.20056262759859955
+
+    Note that the above gray image’s pixels are normalized between 0 and 1 by dividing all their values by 256.
+
+We obtain a mean of 0.2, which gives us a preliminary idea for the threshold we might want to use.
+
+Now, we use this threshold to mask the image array. If the pixel value is lower than the threshold, its value becomes 0 — black or 1 — white if otherwise. In other words, we get a black and white binary picture:
+png
+Photo by cmonphotography from Pexels
+
+In this version, we can differentiate the outline of the stag more clearly. We can reverse the mask so that the background turns white:
+png
+Photo by cmonphotography from Pexels
+2. Thresholding — global
+
+While it might be fun trying out different thresholds and seeing their effect on the image, we usually perform thresholding using an algorithm that will be more robust than our eyeball estimates.
+
+There are many thresholding algorithms, so it might be hard to choose one. In this case, skimage has try_all_threshold function, which runs seven thresholding algorithms on the given grayscale image. Let's load an example and convert it:
+png
+Photo by Lisa Fotios from Pexels
+
+We will see if we can refine the tulips' features by using thresholding:
+png
+
+As you can see, some algorithms work better while others are horrible on this image. The otsu algorithm looks better, so we will continue using it.
+
+At this point, I want to draw your attention back to the original tulip image:
+
+>>> show(flower)
+
+png
+Photo by Lisa Fotios from Pexels
+
+The image has an uneven background because so much light is coming from the window behind. We can confirm this by plotting a histogram of the gray tulip:
+
+>>> plt.hist(flower_gray.ravel(), bins=256);
+
+png
+
+As expected, most pixels' values are at the far end of the histogram, confirming that they are mostly bright.
+
+Why is this important? Depending on the lightness of an image, the performance of thresholding algorithms also changes. For this reason, thresholding algorithms typically have two types:
+
+    Global — for photos with even, uniform backgrounds
+    Local — for images with different brightness levels in various picture regions.
+
+The tulip image goes into the second category because the right-hand part is much brighter than the other half, making its background uneven. We can't use a global thresholding algorithm on it and which was the reason why the performance of all algorithms in try_all_threshold was so poor.
+
+We will come back to the tulip example and local thresholding in just a bit. For now, we will load another instance with a much-refined brightness and try to automatically threshold it:
+png
+Photo by Pixabay from Pexels
+
+We will use a common global thresholding algorithm threshold_otsu in Skimage:
+png
+Photo by Pixabay from Pexels
+
+It works much better!
+3. Thresholding — local
+
+Now, we will work with local thresholding algorithms.
+
+Instead of looking at the whole image, local algorithms focus on pixel neighborhoods to account for the uneven brightness in different regions. A common local algorithm in skimage is given as threshold_local function:
+png
+Photo by Lisa Fotios from Pexels
+
+You have to play around with the offset argument to find the optimal image to your needs. offset is the constant that is subtracted from the mean of the local pixel neighborhood. This "pixel neighborhood" is determined with the block_size parameter in local_threshold, which denotes the number of pixels the algorithm looks around each point in each direction.
+
+Obviously, it is a disadvantage to tune both offset and block_size but local thresholding is the only option that yields better results than manual or global thresholding.
+
+Let's try one more example:
+png
+Photo by Monstera from Pexels
+
+As you can see, the handwriting on the board is more refined after thresholding.
+4. Edge detection
+
+Edge detection is useful in many ways, such as identifying objects, extracting features from them, counting them, and many more. We will start with the basic Sobel filter, which finds the edges of objects in grayscale images. We will load a picture of coins and use the Sobel filter on them:
+png
+Photo by Dmitry Demidov from Pexels
+
+The Sobel is pretty straightforward; you just have to call it on the gray image to get an output like above. We will see a more sophisticated version of Sobel in a later section.
+5. Smoothing
+
+Another image filtering technique is smoothing. Many images like the chickens below may contain random noise with no valuable information to ML and DL algorithms.
+
+For example, the hairs around the chickens add noise to the image, which may deviate the attention of ML models from the main objects themselves. We use smoothing to blur the noise or edges and reduce contrast in such scenarios.
+
+chickens = imread("images/chickens.jpg")
+
+>>> show(chickens)
+
+png
+Photo by Victor Burnside from Pexels
+
+One of the most popular and powerful smoothing techniques is gaussian smoothing:
+png
+Photo by Victor Burnside from Pexels
+
+You can control the effect of the blur by tweaking the sigma argument. Don't forget to set multichannel to True, if you are dealing with an RGB image.
+
+If the image resolution is too high, the smoothing effect might not be visible to the naked eye, but it will still be effective under the hood.
+
+    You can read the next part of the post here.
+
+Join Medium with my referral link - Bex T.
+As a Medium member, a portion of your membership fee goes to writers you read, and you get full access to every story…
+
+ibexorigin.medium.com
+
+Or subscribe to my email list:
+Get an email whenever Bex T. publishes.
+Get an email whenever Bex T. publishes. By signing up, you will create a Medium account if you don't already have one…
+
+ibexorigin.medium.com
+
+You can reach out to me on LinkedIn or Twitter for a friendly chat about all things data. Or you can just read another story from me. How about these:
+Good-bye Pandas! Meet Terality — Its Evil Twin With Identical Syntax
+Edit description
+
+towardsdatascience.com
+GitHub Copilot Crushes Data Science And ML Tasks: Ultimate Review
+Edit description
+
+towardsdatascience.com
+10-Minute Guide to Julia For Die-Hard Python Lovers
+Edit description
+
+towardsdatascience.com
+6 Pandas Mistakes That Silently Tell You Are a Rookie
+Edit description
+
+towardsdatascience.com
+8 Booming Data Science Libraries You Must Watch Out in 2022
+Edit description
+
+towardsdatascience.com
+
+Sign up for The Variable
+By Towards Data Science
+
+Every Thursday, the Variable delivers the very best of Towards Data Science: from hands-on tutorials and cutting-edge research to original features you don't want to miss. Take a look.
+More from Towards Data Science
+Follow
+
+Your home for data science. A Medium publication sharing concepts, ideas and codes.
+Adam Brownell
+
+Adam Brownell
+
+·1 day ago
+Our Impending (& Self-Inflicted) AI-Horror Boom
+
+The world is growing more distrustful of AI, and it’s AI developers fault — This is part 2 of our series on ML Fairness (link). Previously, we discussed how ML teams rarely attempt to address societal bias in models due to a myriad of (weak) reasons. In this article, we will explore the consequences of this neglect. Thesis: Due to high-profile ML failures and…
+Artificial Intelligence
+
+10 min read
+Our Impending (& Self-Inflicted) AI-Horror Boom
+
+Share your ideas with millions of readers.
+Write on Medium
+Eryk Lewinson
+
+Eryk Lewinson
+
+·1 day ago
+pur — the easiest way to keep your requirements file up to date
+
+Update all the libraries in your requirements.txt with a single line of code — I don’t think I need to convince you about the benefits of keeping your Python libraries (or other software as a matter of fact) up to date: bugs are fixed over time, potential security vulnerabilities are patched, compatibility issues may arise, etc. And the list goes on and on. In…
+Python
+
+3 min read
+pur — the easiest way to keep your requirements file up to date
+Joyita Bhattacharya
+
+Joyita Bhattacharya
+
+·1 day ago
+Materials Data Mining via Image Processing of Micrographs
+
+Basic processing steps for micrograph-based feature extraction — Background In my post “Uncovering the Potential of Materials Data using Matminer and Pymatgen”, I discussed the concept of materials tetrahedron — the basic framework for developing materials for various technological usage. The vital parameters occupying the vertices of the tetrahedron are process, structure, property, and performance.
+Image Processing
+
+8 min read
+Materials Data Mining via Image Processing of Micrographs
+Loris Michel
+
+Loris Michel
+
+·1 day ago
+A/B testing with Random Forest
+
+General non-parametric A/B test based on the Random Forest using the R-package hypoRF — Contributors: Loris Michel, Jeffrey Näf The importance of A/B testing in business decisions is not a new topic. We can point the reader to this story to get a good recap about the major steps and challenges underlying A/B testing. However, when it comes to the choice of the test…
+Machine Learning
+
+4 min read
+A/B testing with Random Forest
+Dmytro Nikolaiev (Dimid)
+
+Dmytro Nikolaiev (Dimid)
+
+·1 day ago
+Unsupervised Learning algorithms cheat sheet
+
+A complete cheat sheet for all unsupervised machine learning algorithms you should know — This article provides cheat sheets for different unsupervised learning machine learning concepts and algorithms. This is not a tutorial, but it can help you to better understand the structure of machine learning or to refresh your memory. To know more about a particular algorithm, just Google it or check for…
+Data Science
+
+5 min read
+Unsupervised Learning algorithms cheat sheet
+Read more from Towards Data Science
+More from Medium
+SIFT (Bag of features) + SVM for classification
+Open data 5m scale modeling for Epithermal gold ore at Lamuntet, West Sumbawa District, Indonesia
+Diffusion Hackathon 2019
+Hailing from the Blockpass Identity Lab, based in sunny-Scotland, our team of three travelled to Berlin to participate in Diffusion; a…
+Sentiment Analysis of Medical literature
+SAM aims to be a flexible NLP framework; a layer sitting between Pubmed and the end-user which streamlines the painstaking NLP tasks
+Resources to get started with Keras and it’s Applications
+Data Poisoning and Backdoor Attacks: An Overview (Part 1)
+Clone Driving Behaviour
+Getting Started with Core ML — ML on iOS
+▶ OVERVIEW
+
+Sign In
+Bex T.
+Bex T.
+
+AI Content Writer @ NVIDIA |🥇Top 10 Writer in AI and ML | Kaggle Master | https://www.linkedin.com/in/bextuychiev/ | https://ibexorigin.medium.com/membership
+Follow
+Related
+png
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #2
+Function Optimization with Python
+Using hyperopt for functions minimization
+Apache Airflow for Data Science — How to Install Airflow Locally
+How to Write Test Code for Data Science Pipeline
+
+
+
+
+
+
+
+######### FOOBAR__pArt_2_below 
+
+
+Towards Data Science
+Published in
+Towards Data Science
+
+·
+Follow
+You have 2 free member-only stories left this month. Sign up for Medium and get an extra one
+
+Bex T.
+Bex T.
+Feb 17
+
+·
+9 min read
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #2
+Manipulate and transform images at will
+
+Photo by Ihsan Adityawarman on Pexels
+This is the second part of my first post on Image Processing. Please read the first one for context and setup.
+We will kick off the second part with contrast enhancement.
+6. Contrast enhancement
+Certain types of images like medical analysis results have low contrast, making it hard to spot details, like below:
+
+png
+Image by Pixabay
+We can use contrast enhancement to make the details more distinct in such scenarios. There are two types of contrast enhancement algorithms:
+Contrast stretching
+Histogram equalization
+We will discuss histogram equalization in this post, which, in turn, has three types:
+Standard histogram equalization
+Adaptive histogram equalization
+Contrast Limited Adaptive Histogram Equalization (CLAHE)
+Histogram equalization spreads out the areas with the highest contrast of an image to less bright regions, equalizing it.
+Oh, by the way, you can calculate the contrast of an image by subtracting the lowest pixel value from the highest.
+>>> xray.max() - xray.min()
+255
+Now, let’s try the standard histogram equalization from the exposure module:
+
+png
+Image by Pixabay
+We can already see the details a lot more clearly.
+Next, we will use the CLAHE (this is a fun word to pronounce!), which computes many histograms for different pixel neighborhoods in an image, which results in more detail even in the darkest of the regions:
+
+png
+Image by Pixabay
+This one looks a lot better since it could show details in the background and a couple more missing ribs in the bottom left. You can tweak clip_limit for more or less detail.
+7. Transformations
+Images in your dataset might have several clashing characteristics, like different scales, unaligned rotations, etc. ML and DL algorithms expect your pictures to have the same shape and dimensions. Therefore, you need to learn how to fix them.
+Rotations
+To rotate images, use the rotate function from the transform module. I've chosen actual clocks so you might remember the angle signs better:
+
+png
+Photo by RP Singh from Pexels
+
+png
+Photo by RP Singh from Pexels
+Rescaling
+Another standard operation is scaling images, and it is primarily helpful in cases where images are proportionally different.
+We use a similar rescale function for this operation:
+png
+Photo by Pixabay from Pexels
+When image resolution is high, downscaling it too much might result in quality loss or pixels rubbing together unceremoniously to create unexpected edges or corners. To account for this effect, you can set anti_aliasing to True, which uses Gaussian smoothing under the hood:
+https://gist.github.com/f7ae272b6eb1bce408189d8de2b71656
+png
+Photo by Pixabay from Pexels
+As before, the smoothing isn’t noticeable, but it will be evident at a more granular level.
+Resizing
+If you want the image to have specific width and height, rather than scaling it by a factor, you can use the resize function by providing an output_shape:
+png
+Photo by Chevanon Photography from Pexels
+Image restoration and enhancement
+Some images might be distorted, damaged, or lost during file transforms, in faulty downloads, or many other situations. Rather than giving up on the idea, you can use skimage to account for the damage and make the image good as new.
+In this section, we will discuss a few techniques for image restoration, starting with inpainting.
+1. Inpainting
+An inpainting algorithm can intelligently fill in the blanks in an image. I couldn’t find a damaged picture, so we will use this whale image and put a few blanks on it manually:
+whale_image = imread("images/00206a224e68de.jpg")
+>>> show(whale_image)
+png
+>>> whale_image.shape
+(428, 1916, 3)
+The below function creates four pitch-black regions to simulate lost information on an image:
+png
+We will use the inpaint_biharmonic function from the inpaint module to fill in the blanks, passing in the mask we created:
+png
+As you can see, it will be hard to tell where the defect regions are before seeing the faulty image.
+Now, let’s make some noise📣!
+2. Noise📣
+As discussed earlier, noise plays an essential role in image enhancement and restoration. Sometimes, you might intentionally add it to an image like below:
+png
+Photo by Tuan Nguyen from Pexels
+We use the random_noise function to sprinkle an image with random specks of color. For this reason, the method is called the "salt and pepper" technique.
+3. Reducing noise — denoising
+But, most of the time, you want to remove noise from an image rather than add it. There are a few types of denoising algorithms:
+Total variation (TV) filter
+Bilateral denoising
+Wavelet denoising
+Non-local mean denoising
+We will only look at the first two in this article. Let’s try TV filter first, which is available as denoise_tv_chambolle:
+png
+Photo by Tuan Nguyen from Pexels
+The higher the image’s resolution, the longer it takes to denoise it. You can control the effect of denoising with the weight parameter. Now, let's try denoise_bilateral:
+png
+Photo by Tuan Nguyen from Pexels
+It wasn’t as effective as a TV filter, as can be seen below:
+png
+Photo by Tuan Nguyen from Pexels
+4. Superpixels and Segmentation
+Image segmentation is one of the most fundamental and everyday topics in image processing, and it is extensively used in motion and object detection, image classification, and many more areas.
+We’ve already seen an instance of segmentation — thresholding an image to extract the background from the foreground. This section will learn to do more than that, such as segmenting images into similar areas.
+To get started with segmentation, we need to understand the concept of superpixels.
+A pixel, on its own, just represents a small area of color, and once separated from the image, a single pixel will be useless. For this reason, segmentation algorithms use multiple groups of pixels that are similar in contrast, color, or brightness, and they are called superpixels.
+One algorithm that tries to find superpixels is the Simple Linear Iterative Cluster (SLIC), which uses k-Means clustering under the hood. Let’s see how to use it on the coffee image available in the skimage library:
+from skimage import data
+coffee = data.coffee()
+>>> show(coffee)
+png
+We will use the slic function from the segmentation module:
+from skimage.segmentation import slic
+segments = slic(coffee)
+>>> show(segments)
+png
+slic finds 100 segments or labels by default. To put them back onto the image, we use the label2rgb function:
+from skimage.color import label2rgb
+final_image = label2rgb(segments, coffee, kind="avg")
+>>> show(final_image)
+png
+Let’s wrap this operation inside a function and try to use more segments:
+png
+Segmentation will make it easier for computer vision algorithms to extract useful features from images.
+5. Contours
+Much of the information of an object resides in its shape. If we can detect an object’s shape in lines or contours, we can extract valuable data like its size, markings, etc.
+Let’s see finding contours in practice using the image of dominoes.
+dominoes = imread("images/dominoes.jpg")
+>>> show(dominoes)
+png
+Photo by Pixabay from Pexels
+We will see if we can isolate the tiles and circles using the find_contours function in skimage. This function requires a binary (black and white) image, so we must threshold the image first.
+The resulting array is a list of (n, 2) arrays representing the coordinates of the contour lines:
+We will wrap the operation inside a function called mark_contours:
+To plot the contour lines on the image, we will create another function called plot_image_contours that uses the above one:
+png
+Photo by Pixabay from Pexels
+As we can see, we successfully detected the majority of the contours, but we can still see some random fluctuations in the center. Let’s apply denoising before we pass the image of dominoes to our contour finding function:
+png
+Photo by Pixabay from Pexels
+That’s it! We eliminated most of the noise, causing the incorrect contour lines!
+Advanced operations
+1. Edge detection
+Before, we used the Sobel algorithm to detect the edges of objects. Here, we will use the Canny algorithm, which is more widely used because it is faster and more accurate. As always, the function canny requires a grayscale image.
+This time we will use an image with more coins, hence more edges to detect:
+png
+Photo by Dmitry Demidov from Pexels
+To find edges, we just pass the image to the canny function:
+png
+Photo by Dmitry Demidov from Pexels
+The algorithm found almost all coins’ edges, but it is very noisy because the engravings on the coins are also detected. We can reduce the sensitivity of canny by tweaking the sigma parameter:
+png
+Photo by Dmitry Demidov from Pexels
+As you can see, canny now only finds the general outline of the coins.
+2. Corner detection
+Another important image processing technique is corner detection. Corners can be key features of objects in image classification.
+To find corners, we will use the Harris corner detection algorithm. Let’s load a sample image and convert it to grayscale:
+png
+Photo by Pixabay from Pexels
+We will use the corner_harris function to produce a measured image that masks the 
+areas where corners are.
+
+from skimage.feature import corner_harris
+measured_image = corner_harris(windows_gray)
+>>> show(measured_image)
+png
+
+Now, we will pass this masked measure image to corner_peaks function, which returns corner 
+coordinates this time:
+The function found 79 corners using a minimum distance of 50 pixels between each corner. 
+Let’s wrap the operation up to this point in a function:
+Now, we will create another function that plots each corner using the coordinates produced 
+from the above function:
+png
+Photo by Pixabay from Pexels
+Unfortunately, the algorithm isn’t working as expected. 
+Rather than finding the window corners, 
+the marks are placed at the intersection of the bricks. 
+These intersections are noise, making them useless. 
+Let’s denoise the image and pass it to the function once again:
+png
+Now, this is much better! It ignored the brick edges and found the majority of window corners.
+Conclusion
+Phew! What a post! Both you and I deserve a pat on the back!
+I had quite a fun writing these two articles. In a real computer vision problem, you won’t be using all of these at once, of course. As you may have noticed, things we learned today aren’t complicated, and they take a few lines of code, at most. The tricky part is applying them to a real problem and actually improving your model’s performance.
+That bit comes with hard work and practice, not nicely packaged inside a single article. Thank you for reading!
+Read the first part here.
+You can become a premium Medium member using the link below and get access to all of my stories and thousands of others:
+Join Medium with my referral link — Bex T.
+As a Medium member, a portion of your membership fee goes to writers you read, and you get full access to every story…
+ibexorigin.medium.com
+
+Or subscribe to my email list:
+Get an email whenever Bex T. publishes.
+Get an email whenever Bex T. publishes. By signing up, you will create a Medium account if you don’t already have one…
+ibexorigin.medium.com
+
+You can reach out to me on LinkedIn or Twitter for a friendly chat about all things data. Or you can just read another story from me. How about these:
+Good-bye Pandas! Meet Terality — Its Evil Twin With Identical Syntax
+Edit description
+towardsdatascience.com
+
+GitHub Copilot Crushes Data Science And ML Tasks: Ultimate Review
+Edit description
+towardsdatascience.com
+
+10-Minute Guide to Julia For Die-Hard Python Lovers
+Edit description
+towardsdatascience.com
+
+6 Pandas Mistakes That Silently Tell You Are a Rookie
+Edit description
+towardsdatascience.com
+
+8 Booming Data Science Libraries You Must Watch Out in 2022
+Edit description
+towardsdatascience.com
+
+34
+
+
+1
+
+
+
+
+
+Sign up for The Variable
+By Towards Data Science
+Every Thursday, the Variable delivers the very best of Towards Data Science: from hands-on tutorials and cutting-edge research to original features you don't want to miss. Take a look.
+
+
+Get this newsletter
+More from Towards Data Science
+Follow
+Your home for data science. A Medium publication sharing concepts, ideas and codes.
+
+Bex T.
+Bex T.
+
+·1 day ago
+
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #1
+Manipulate and transform images at will — Introduction We are here on a sad business. Very sad, indeed. We are here to learn how to take beautiful, breathtaking images and turn them into a bunch of ugly little numbers so that they are more presentable to all those soulless, mindless machines. We…
+
+Deep Learning
+10 min read
+
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #1
+Share your ideas with millions of readers.
+
+Write on Medium
+Adam Brownell
+Adam Brownell
+
+·1 day ago
+
+Our Impending (& Self-Inflicted) AI-Horror Boom
+The world is growing more distrustful of AI, and it’s AI developers fault — This is part 2 of our series on ML Fairness (link). Previously, we discussed how ML teams rarely attempt to address societal bias in models due to a myriad of (weak) reasons. In this article, we will explore the consequences of this neglect. Thesis: Due to high-profile ML failures and…
+
+Artificial Intelligence
+10 min read
+
+Our Impending (& Self-Inflicted) AI-Horror Boom
+Eryk Lewinson
+Eryk Lewinson
+
+·1 day ago
+
+pur — the easiest way to keep your requirements file up to date
+Update all the libraries in your requirements.txt with a single line of code — I don’t think I need to convince you about the benefits of keeping your Python libraries (or other software as a matter of fact) up to date: bugs are fixed over time, potential security vulnerabilities are patched, compatibility issues may arise, etc. And the list goes on and on. In…
+
+Python
+3 min read
+
+pur — the easiest way to keep your requirements file up to date
+Joyita Bhattacharya
+Joyita Bhattacharya
+
+·1 day ago
+
+Materials Data Mining via Image Processing of Micrographs
+Basic processing steps for micrograph-based feature extraction — Background In my post “Uncovering the Potential of Materials Data using Matminer and Pymatgen”, I discussed the concept of materials tetrahedron — the basic framework for developing materials for various technological usage. The vital parameters occupying the vertices of the tetrahedron are process, structure, property, and performance.
+
+Image Processing
+8 min read
+
+Materials Data Mining via Image Processing of Micrographs
+Loris Michel
+Loris Michel
+
+·1 day ago
+
+A/B testing with Random Forest
+General non-parametric A/B test based on the Random Forest using the R-package hypoRF — Contributors: Loris Michel, Jeffrey Näf The importance of A/B testing in business decisions is not a new topic. We can point the reader to this story to get a good recap about the major steps and challenges underlying A/B testing. However, when it comes to the choice of the test…
+
+Machine Learning
+4 min read
+
+A/B testing with Random Forest
+Read more from Towards Data Science
+More from Medium
+
+Behavioural Cloning Applied to Self-Driving Car on a Simulated Track
+
+CVPR 2021 Select Paper Reviews
+Reviewed a few papers that were presented orally at CVPR 2021. Tried to capture their essence in the following.
+
+Kaiming He initialization
+We will derive Kaiming initialization in this post.
+How can Clustering (Unsupervised Learning) be used to improve the accuracy of Linear Regression…
+
+Implementing Feature Selection Methods for Machine learning
+The memory profile graph is like an autumn forest
+GPU Memory Profile in Tensorflow
+Set up tensorboard to help memory profiling for deep Learning
+
+Mathematics behind Decision Tree
+Decision tree based on the nested if-else classifier. it is the set of the axis-parallel hyperplane which divides the region into a…
+
+Stop experimenting with machine learning and start actually using it!
+Get started
+Sign In
+
+Search
+Bex T.
+Bex T.
+5.2K Followers
+
+AI Content Writer @ NVIDIA |🥇Top 10 Writer in AI and ML | Kaggle Master | https://www.linkedin.com/in/bextuychiev/ | https://ibexorigin.medium.com/membership
+
+Follow
+
+Related
+png
+Massive Tutorial on Image Processing And Preparation For Deep Learning in Python, #1
+
+Z-Distribution or Z-Score Application in Machine Learning
+
+Function Optimization with Python
+Using hyperopt for functions minimization
+
+Generating Scientific Papers Titles Using Machine Learning
+Help
+
+Status
+
+Writers
+
+Blog
+
+Careers
+
+Privacy
+
+Terms
+
+About
+
+Knowable
+
+
