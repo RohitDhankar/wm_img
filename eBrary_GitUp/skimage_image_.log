@@ -15,9 +15,12 @@ Manipulate and transform images at will
 Photo by Prasad Panchakshari on Unsplash
 Introduction
 
-We are here on a sad business. Very sad, indeed. We are here to learn how to take beautiful, breathtaking images and turn them into a bunch of ugly little numbers so that they are more presentable to all those soulless, mindless machines.
+We are here on a sad business. Very sad, indeed. 
+We are here to learn how to take beautiful, breathtaking images and turn them into a bunch of ugly little numbers so that they are more presentable to all those soulless, mindless machines.
 
-We will take animals and strip them of their color, making them black and white. Grab flowers with vivid colors and rob them of their beauty. We will look at disturbing images of XRays and see ways to make them even more disturbing. Sometimes, we might even have fun drawing coins using a computer algorithm.
+We will take animals and strip them of their color, 
+making them black and white. Grab flowers with vivid colors and rob them of their beauty. 
+We will look at disturbing images of XRays and see ways to make them even more disturbing. Sometimes, we might even have fun drawing coins using a computer algorithm.
 
 In other words, we will learn how to perform image processing. And our library of honor will be Scikit-Image (Skimage) throughout the article.
 
@@ -65,9 +68,12 @@ of them side by side for comparison.
 We will be using both functions extensively throughout the tutorial, 
 so you might want to check out the code I hyperlinked.
 
-By convention, the third dimension of the ndarray is for the color channel, but this convention isn't always followed. Skimage usually provides parameters to specify this behavior whenever you find it so.
+By convention, the third dimension of the ndarray is for the color channel, 
+but this convention isn't always followed. 
+Skimage usually provides parameters to specify this behavior whenever you find it so.
 
-Images are unlike the usual Matplotlib plots. Their origin isn't located in the bottom left, but at the position (0, 0), the top left.
+Images are unlike the usual Matplotlib plots. 
+Their origin isn't located in the bottom left, but at the position (0, 0), the top left.
 
 >>> show(image, axis=True)
 

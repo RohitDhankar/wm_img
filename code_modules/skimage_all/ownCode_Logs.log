@@ -1,0 +1,19 @@
+(pytorch_venv) dhankar@dhankar-1:~/.../wm_img$ pip install scikit-image
+Requirement already satisfied: scikit-image in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (0.17.2)
+Requirement already satisfied: networkx>=2.0 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (2.5)
+Requirement already satisfied: pillow!=7.1.0,!=7.1.1,>=4.3.0 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (7.2.0)
+Requirement already satisfied: tifffile>=2019.7.26 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (2020.9.3)
+Requirement already satisfied: numpy>=1.15.1 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (1.19.1)
+Requirement already satisfied: scipy>=1.0.1 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (1.5.2)
+Requirement already satisfied: matplotlib!=3.0.0,>=2.0.0 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (3.3.1)
+Requirement already satisfied: PyWavelets>=1.1.1 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (1.1.1)
+Requirement already satisfied: imageio>=2.3.0 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from scikit-image) (2.9.0)
+Requirement already satisfied: decorator>=4.3.0 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from networkx>=2.0->scikit-image) (4.4.2)
+Requirement already satisfied: cycler>=0.10 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from matplotlib!=3.0.0,>=2.0.0->scikit-image) (0.10.0)
+Requirement already satisfied: pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.3 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from matplotlib!=3.0.0,>=2.0.0->scikit-image) (2.4.7)
+Requirement already satisfied: python-dateutil>=2.1 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from matplotlib!=3.0.0,>=2.0.0->scikit-image) (2.8.1)
+Requirement already satisfied: kiwisolver>=1.0.1 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from matplotlib!=3.0.0,>=2.0.0->scikit-image) (1.2.0)
+Requirement already satisfied: certifi>=2020.06.20 in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from matplotlib!=3.0.0,>=2.0.0->scikit-image) (2020.6.20)
+Requirement already satisfied: six in /home/dhankar/anaconda3/envs/pytorch_venv/lib/python3.8/site-packages (from cycler>=0.10->matplotlib!=3.0.0,>=2.0.0->scikit-image) (1.15.0)
+(pytorch_venv) dhankar@dhankar-1:~/.../wm_img$ 
+
