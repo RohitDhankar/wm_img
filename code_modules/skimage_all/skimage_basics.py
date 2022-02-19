@@ -40,14 +40,14 @@ plt.imshow(dog_img)#, cmap=cmap_type)
 from skimage.color import rgb2gray
 gray_dog_img = rgb2gray(dog_img)
 plt.imshow(gray_dog_img)#
-plt.show()
+#plt.show()
 #
 #rescale_dog_img = rescale(dog_img,1.0/4.0, anti_aliasing=True) # Notice change in X AXIS Pixel SIZE 
 # X Axis - 700 to >> 170 
 rescale_dog_img = rescale(dog_img,2.0/3.0, anti_aliasing=True) # Notice change in X AXIS Pixel SIZE 
 # X Axis - 700 to >> 145 
 plt.imshow(rescale_dog_img)#
-plt.show()
+#plt.show()
 #
 print("--dog_img.shape---",dog_img.shape)
 print("--dog_img.ndim---",dog_img.ndim) # 3D
@@ -60,7 +60,7 @@ print("--resize_dog_img.size---",resize_dog_img.size) # The number of pixels - S
 # ERRORS Out >> resize_dog_img = rescale(dog_img,(200,200,3), anti_aliasing=True) # 
 # MemoryError: Unable to allocate 706. GiB for an array with shape (53800, 146800, 12) and data type float64
 plt.imshow(resize_dog_img)#
-plt.show()
+#plt.show()
 """
 --dog_img.shape--- (269, 734, 4)
 --dog_img.ndim--- 3
@@ -75,6 +75,25 @@ plt.show()
 # plt.show()
 ## SOURCE >> https://scikit-image.org/docs/stable/auto_examples/transform/plot_rescale.html
 
+from skimage.filters import sobel , scharr , prewitt , roberts
+#print("---type---roberts",type(roberts)) #---type---roberts <class 'function'>
+
+edge_detect_roberts = roberts(box_img)# Image input to -- roberts -- has to be a 2D Image
+#print("---type---edge_detect_roberts",type(edge_detect_roberts)) # <class 'numpy.ndarray'>
+plt.imshow(edge_detect_roberts,cmap="Reds_r")#
+plt.show()
+edge_detect_sobel = sobel(box_img)#
+plt.imshow(edge_detect_sobel,cmap="Blues_r")#
+plt.show()
+edge_detect_scharr = scharr(box_img)#
+plt.imshow(edge_detect_scharr,cmap="Blues_r")#
+plt.show()
+edge_detect_prewitt = prewitt(box_img)#
+plt.imshow(edge_detect_prewitt,cmap="Reds_r")#
+plt.show()
+#
+# Canny Edge Detection 
+from skimage.feature import canny 
 
 
 
